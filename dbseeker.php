@@ -10,6 +10,15 @@ if (! isset($_SERVER['argv'][1])) {
     echo "Please, give a pattern to search enclosed by double quotes, ex. : \"http:\"\n";
     exit (0);
 } else {
+    if ("-h" == $_SERVER['argv'][1] || "--help" == $_SERVER['argv'][1]) {
+        echo <<<EOF
+This tool searches or searches and replaces pattern in database
+usage: dbseeker.php pattern [replacement_pattern]
+
+EOF;
+;
+        exit (0);
+    }
     $regexpPattern = $_SERVER['argv'][1];
 }
 if (isset($_SERVER['argv'][2])) {
@@ -20,6 +29,10 @@ if (isset($_SERVER['argv'][2])) {
     if ( $confirmation !== 'y' ) {
         echo "exiting...\n";
         exit (0);
+    } else {
+        printf("Backuping database here: %s", getcwd()."/".$database.".sql");
+        $cmd = sprintf("mysqldump -h %s -u %s %s %s > %s", $host, $user, ("" != $password)? "-p".$password:"", $database, getcwd()."/".$database.".sql");
+        shell_exec($cmd);
     }
 }
 
