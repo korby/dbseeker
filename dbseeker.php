@@ -1,29 +1,50 @@
 #!/usr/bin/env php
 <?php
-// DB CONFIGS
 $host = "127.0.0.1";
-$database = "website";
-$user = "root";
 $password = "";
+$options = getopt("h:u:p:d:s:r:");
 
-if (! isset($_SERVER['argv'][1])) {
-    echo "Please, give a pattern to search enclosed by double quotes, ex. : \"http:\"\n";
-    exit (0);
-} else {
-    if ("-h" == $_SERVER['argv'][1] || "--help" == $_SERVER['argv'][1]) {
+if (! isset($_SERVER['argv'][1]) || "--help" == $_SERVER['argv'][1]) {
         echo <<<EOF
 This tool searches or searches and replaces pattern in database
-usage: dbseeker.php pattern [replacement_pattern]
+usage: dbseeker.php [-h host] -u user [-p password] -d databasename -s pattern [-r replacement_pattern]
 
 EOF;
 ;
         exit (0);
-    }
-    $regexpPattern = $_SERVER['argv'][1];
 }
-if (isset($_SERVER['argv'][2])) {
-    $replace = $_SERVER['argv'][2];
+
+if(isset($options["h"])) {
+  if($options["h"] != "") {
+    $host = $options["h"];
+  }
+}
+if(isset($options["p"])) {
+    $host = $options["p"];
+}
+if(isset($options["r"])) {
+    $replace = $options["r"];
+}
+if(! isset($options["u"])) {
+  die("You must give a user name : -u myusername");
+} else {
+  $user = $options["u"];
+}
+if(! isset($options["d"])) {
+  die("You must give a database name : -d databasename");
+} else {
+  $database = $options["d"];
+}
+if(! isset($options["s"])) {
+  die("You must give a pattern to search : -s pattern");
+} else {
+  $regexpPattern = $options["s"];
+}
+
+
+if (isset($replace)) {
     echo "Replace string given, all occurences of ".$regexpPattern." will be replaced by ".$replace."\n";
+    echo "Replacements are case sensitive.\n";
     echo "Do you want to perform replacement ? [y/N]";
     $confirmation  =  trim(fgets(STDIN));
     if ( $confirmation !== 'y' ) {
@@ -86,7 +107,7 @@ while ($table = mysqli_fetch_array($resSet)) {
 mysqli_close($link);
 
 if ($replacementsDone) {
-    printf("\n"."To revert replacements, just execute \n".'./%s "%s" "%s"',
+    printf("\n"."To revert replacements, just execute \n".'./%s -s %s -r %s',
         basename(__FILE__), $replace, $regexpPattern);
 }
 

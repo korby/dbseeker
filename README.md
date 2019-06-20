@@ -11,6 +11,10 @@ git clone git@github.com:korby/dbseeker.git
 
 # Usage
 ```
-./dbseeker.php "termToSearch"
-./dbseeker.php "termToSearch" "replacementTerm"
+./dbseeker.php  [-h host] -u user [-p password] -d databasename -s pattern [-r replacement_pattern]
+```
+
+# Example
+```
+./dbseeker.php  -u myusername -d mydatabase -s "something"
 ```
