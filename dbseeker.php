@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 // DB CONFIGS
-$host = "localhost";
-$database = "";
+$host = "127.0.0.1";
+$database = "website";
 $user = "root";
 $password = "";
 
@@ -46,25 +46,25 @@ printf("return entries containing pattern '%s'", $regexpPattern);
 echo "\nTable   +++     First Field value   +++     field with pattern";
 echo "\n________________________________________________________________";
 
-$link = mysql_connect($host, $user, $password)
+$link = mysqli_connect($host, $user, $password)
 or die("Impossible de se connecter : " . mysql_error());
 
-mysql_select_db($database, $link)
+mysqli_select_db($link, $database)
 or die('Could not select database.');
 
 $strQuery = "Show tables ";
-$resSet = mysql_query($strQuery);
+$resSet = mysqli_query($link, $strQuery);
 $replacementsDone = false;
-while ($table = mysql_fetch_array($resSet)) {
+while ($table = mysqli_fetch_array($resSet)) {
     $tableName = $table[0];
         if (! in_array($tableName, $excludedTables)) {
-            $aFields = textFields($tableName, $tabFieldsTypeText);
+            $aFields = textFields($link, $tableName, $tabFieldsTypeText);
             foreach ($aFields as $field) {
                 $strQuery= "select * from ".$tableName. " where ".$field." regexp '".$regexpPattern."' ";
-                $resSet2 = mysql_query($strQuery);
+                $resSet2 = mysqli_query($link, $strQuery);
                 if (is_resource($resSet2)) {
                     $found = false;
-                    while ($entryFound = mysql_fetch_array($resSet2)) {
+                    while ($entryFound = mysqli_fetch_array($resSet2)) {
                         $found = true;
                         printf("\n%s   +++     %s   +++     %s",
                             $tableName, $entryFound[0], $field);
@@ -72,7 +72,7 @@ while ($table = mysql_fetch_array($resSet)) {
                     }
                     if (isset($replace) && $found) {
                         $strQuery= "update ".$tableName. " set ".$field."= replace(".$field.",'".$regexpPattern."','".$replace."');";
-                        mysql_query($strQuery);
+                        mysqli_query($link, $strQuery);
                         $replacementsDone = true;
                         printf("\n All '%s' occurrences have been replaced by '%s' in field %s",
                             $regexpPattern, $replace, $tableName.".".$field);
@@ -88,7 +88,7 @@ if ($replacementsDone) {
         basename(__FILE__), $replace, $regexpPattern);
 }
 
-mysql_close($link);
+mysqli_close($link);
 
 /**
  * Get table's fields names
@@ -97,12 +97,12 @@ mysql_close($link);
  *
  * @return array
  */
-function textFields($tableName, $typesFilter = null)
+function textFields($link, $tableName, $typesFilter = null)
 {
     $strQuery = "desc ".$tableName;
-    $resSet = mysql_query($strQuery);
+    $resSet = mysqli_query($link, $strQuery);
     $res = array();
-    while ($row = mysql_fetch_array($resSet)) {
+    while ($row = mysqli_fetch_array($resSet)) {
         if (null == $typesFilter) {
             $res[] = $row['Field'];
         } else {
