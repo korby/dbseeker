@@ -64,10 +64,10 @@ while ($table = mysqli_fetch_array($resSet)) {
                 $resSet2 = mysqli_query($link, $strQuery);
                 if (mysqli_num_rows($resSet2) > 0) {
                     $found = false;
-                    while ($entryFound = mysqli_fetch_array($resSet2)) {
+                    while ($entryFound = mysqli_fetch_array($resSet2, MYSQLI_BOTH)) {
                         $found = true;
                         printf("\n%s   +++     %s   +++     %s",
-                            $tableName, $entryFound[0], $field);
+                            $tableName, $entryFound[0], $field." (".getPreview($entryFound[$field]).")");
 
                     }
                     if (isset($replace) && $found) {
@@ -83,13 +83,23 @@ while ($table = mysqli_fetch_array($resSet)) {
         }
 }
 
+mysqli_close($link);
+
 if ($replacementsDone) {
     printf("\n"."To revert replacements, just execute \n".'./%s "%s" "%s"',
         basename(__FILE__), $replace, $regexpPattern);
 }
 
-mysqli_close($link);
+printf("%s", "\n");
 
+function getPreview($text) {
+  $preview = substr($text, 0, 40);
+  if(strlen($text) > 40) {
+    $preview .= "...";
+  }
+
+  return $preview;
+}
 /**
  * Get table's fields names
  * @param string $tableName
