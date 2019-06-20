@@ -62,7 +62,7 @@ while ($table = mysqli_fetch_array($resSet)) {
             foreach ($aFields as $field) {
                 $strQuery= "select * from ".$tableName. " where ".$field." regexp '".$regexpPattern."' ";
                 $resSet2 = mysqli_query($link, $strQuery);
-                if (is_resource($resSet2)) {
+                if (mysqli_num_rows($resSet2) > 0) {
                     $found = false;
                     while ($entryFound = mysqli_fetch_array($resSet2)) {
                         $found = true;
