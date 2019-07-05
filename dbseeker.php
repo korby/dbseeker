@@ -20,7 +20,7 @@ if(isset($options["h"])) {
   }
 }
 if(isset($options["p"])) {
-    $host = $options["p"];
+    $password = $options["p"];
 }
 if(isset($options["r"])) {
     $replace = $options["r"];
@@ -68,7 +68,7 @@ echo "\nTable   +++     First Field value   +++     field with pattern";
 echo "\n________________________________________________________________";
 
 $link = mysqli_connect($host, $user, $password)
-or die("Impossible de se connecter : " . mysql_error());
+or die("Impossible de se connecter : " . mysqli_error());
 
 mysqli_select_db($link, $database)
 or die('Could not select database.');
