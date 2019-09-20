@@ -115,6 +115,7 @@ printf("%s", "\n");
 
 function getPreview($text) {
   $preview = substr($text, 0, 40);
+  $preview = str_replace("\n", " ", $preview);
   if(strlen($text) > 40) {
     $preview .= "...";
   }
