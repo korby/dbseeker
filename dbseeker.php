@@ -81,9 +81,18 @@ while ($table = mysqli_fetch_array($resSet)) {
         if (! in_array($tableName, $excludedTables)) {
             $aFields = textFields($link, $tableName, $tabFieldsTypeText);
             foreach ($aFields as $field) {
-                $strQuery= "select * from ".$tableName. " where ".$field." regexp '".$regexpPattern."' ";
+                $strQuery= "select * from ".$tableName. " where `".$field."` regexp '".$regexpPattern."' ";
                 $resSet2 = mysqli_query($link, $strQuery);
-                if (mysqli_num_rows($resSet2) > 0) {
+                $numRows = 0;
+                if($resSet2 == false ) {
+                  $numRows = 0;
+                  printf("\n%s   +++     %s   +++     %s",
+                      $tableName, $entryFound[0], $field." mysql error ".mysqli_error($link).". Mysql request was ".$strQuery);
+
+                } else {
+                  $numRows  = mysqli_num_rows($resSet2);
+                }
+                if ($numRows > 0) {
                     $found = false;
                     while ($entryFound = mysqli_fetch_array($resSet2, MYSQLI_BOTH)) {
                         $found = true;
